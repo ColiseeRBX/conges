@@ -1,0 +1,50 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Panneau d'Approbation</title>
+    <link rel="stylesheet" href="/static/style.css">
+</head>
+<body>
+    <div class="container">
+        <h1>Panneau d'Approbation</h1>
+
+        {% if leave_requests %}
+        <table class="styled-table">
+            <thead>
+                <tr>
+                    <th>Nom de l'employé</th>
+                    <th>Type de Congé</th>
+                    <th>Date de Début</th>
+                    <th>Date de Fin</th>
+                    <th>Raison</th>
+                    <th>Statut</th>
+                    <th>Actions</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for request in leave_requests %}
+                <tr>
+                    <td>{{ request.employee_name }}</td>
+                    <td>{{ request.leave_type }}</td>
+                    <td>{{ request.start_date }}</td>
+                    <td>{{ request.end_date }}</td>
+                    <td>{{ request.reason }}</td>
+                    <td>{{ request.status }}</td>
+                    <td style="white-space: nowrap;"> <!-- Ajustement ici -->
+                        <a class="approve-btn" href="/approve/{{ loop.index0 }}/{{ approver_role }}">Approuver</a>
+                        <a class="deny-btn" href="/approve/{{ loop.index0 }}/0">Refuser</a>
+                    </td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+        {% else %}
+        <p>Aucune demande de congé à approuver pour le moment.</p>
+        {% endif %}
+
+        <a href="/logout" class="logout-link">Se déconnecter</a>
+    </div>
+</body>
+</html>
