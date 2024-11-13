@@ -67,7 +67,7 @@ pipeline {
                 script {
                     // Mise à jour des fichiers YAML pour utiliser les nouveaux tags Docker
                     sh '''
-                    sed -i "s+image:.*+image: $DOCKER_ID/$DOCKER_IMAGE:$DOCKER_TAG+g" k8s/deployment.yaml
+                    sed -i "s+image:.*+image: $DOCKER_ID/$DOCKER_IMAGE:$DOCKER_TAG+g" kube/deployment.yaml
                     '''
                 }
             }
