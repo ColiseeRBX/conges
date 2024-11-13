@@ -1,8 +1,8 @@
 pipeline {
     environment { 
         // Déclaration des variables d'environnement globales
-        DOCKER_ID = "bouzakri" // Remplacez par votre identifiant Docker
-        DOCKER_IMAGE = "foot_app"
+        DOCKER_ID = "coliseerbx" // Remplacez par votre identifiant Docker
+        DOCKER_IMAGE = "conges_app"
         DOCKER_TAG = "v.${BUILD_ID}.0" // Tag des images avec l'ID de build pour l'incrémentation automatique
     }
     agent any // Jenkins peut sélectionner n'importe quel agent disponible
@@ -12,7 +12,7 @@ pipeline {
             steps {
                 script {
                     sh '''
-                    docker rm -f jenkins || true
+                    docker rm -f conges || true
                     docker build -t $DOCKER_ID/$DOCKER_IMAGE:$DOCKER_TAG .
                     sleep 6
                     '''
@@ -24,7 +24,7 @@ pipeline {
             steps {
                 script {
                     sh '''
-                    docker run -d -p 6000:6000 --name jenkins $DOCKER_ID/$DOCKER_IMAGE:$DOCKER_TAG
+                    docker run -d -p 6000:6000 --name conges $DOCKER_ID/$DOCKER_IMAGE:$DOCKER_TAG
                     sleep 10
                     '''
                 }
@@ -80,10 +80,10 @@ pipeline {
             steps {
                 script {
                     sh '''
-                    kubectl apply -f k8s/deployment.yaml -n dev
-                    kubectl apply -f k8s/service.yaml -n dev
-                    kubectl apply -f k8s/pv.yaml -n dev
-                    kubectl apply -f k8s/pvc.yaml -n dev
+                    kubectl apply -f kube/deployment.yaml -n dev
+                    kubectl apply -f kube/hpa.yaml -n dev
+                    kubectl apply -f kube/pv.yaml -n dev
+                    kubectl apply -f kube/pvc.yaml -n dev
                     '''
                 }
             }
@@ -96,10 +96,10 @@ pipeline {
             steps {
                 script {
                     sh '''
-                    kubectl apply -f k8s/deployment.yaml -n staging
-                    kubectl apply -f k8s/service.yaml -n staging
-                    kubectl apply -f k8s/pv.yaml -n staging
-                    kubectl apply -f k8s/pvc.yaml -n staging
+                    kubectl apply -f kube/deployment.yaml -n staging
+                    kubectl apply -f kube/hpa.yaml -n staging
+                    kubectl apply -f kube/pv.yaml -n staging
+                    kubectl apply -f kube/pvc.yaml -n staging
                     '''
                 }
             }
@@ -123,11 +123,12 @@ pipeline {
                     if (userInput == 'Yes') {
                         echo "Déploiement en production approuvé, exécution du déploiement..."
                         sh '''
-                        kubectl apply -f k8s/deployment.yaml -n prod
-                        kubectl apply -f k8s/service.yaml -n prod
-                        kubectl apply -f k8s/ingress.yaml -n prod
-                        kubectl apply -f k8s/pv.yaml -n prod
-                        kubectl apply -f k8s/pvc.yaml -n prod
+                        kubectl apply -f kube/deployment.yaml -n prod
+                        kubectl apply -f kube/service.yaml -n prod
+                        kubectl apply -f kube/ingress.yaml -n prod
+                        kubectl apply -f kube/pv.yaml -n prod
+                        kubectl apply -f kube/pvc.yaml -n prod
+                        kubectl apply -f kube/hpa.yaml -n prod
                         '''
                     } else {
                         echo "Déploiement en production annulé par l'utilisateur."

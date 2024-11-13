@@ -1,0 +1,26 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: conges-app
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: conges-app
+  template:
+    metadata:
+      labels:
+        app: conges-app
+    spec:
+      containers:
+      - name: conges-app
+        image: coliseerbx/conges-app 
+        ports:
+        - containerPort: 6000
+        volumeMounts:
+        - mountPath: "/data"
+          name: data-volume
+      volumes:
+      - name: data-volume
+        persistentVolumeClaim:
+          claimName: conges-app-pvc
