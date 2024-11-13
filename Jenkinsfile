@@ -125,7 +125,6 @@ pipeline {
                         sh '''
                         kubectl apply -f kube/deployment.yaml -n prod
                         kubectl apply -f kube/service.yaml -n prod
-                        kubectl apply -f kube/ingress.yaml -n prod
                         kubectl apply -f kube/pv.yaml -n prod
                         kubectl apply -f kube/pvc.yaml -n prod
                         kubectl apply -f kube/hpa.yaml -n prod
