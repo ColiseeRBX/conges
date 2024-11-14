@@ -1,43 +1,29 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Statut des Congés</title>
-    <link rel="stylesheet" href="/static/style.css">
-</head>
-<body>
-    <h1>Statut des Demandes de Congé</h1>
-    <table border="1">
-        <thead>
-            <tr>
-                <th>Nom de l'employé</th>
-                <th>Type de Congé</th>
-                <th>Date de début</th>
-                <th>Date de fin</th>
-                <th>Raison</th>
-                <th>Statut</th>
-                <th>Actions</th>
-            </tr>
-        </thead>
-        <tbody>
-            {% for request in leave_requests %}
-            <tr>
-                <td>{{ request.employee_name }}</td>
-                <td>{{ request.leave_type }}</td>
-                <td>{{ request.start_date }}</td>
-                <td>{{ request.end_date }}</td>
-                <td>{{ request.reason }}</td>
-                <td>{{ request.status }}</td>
-                <td>
-                    {% if request.status != "Refusé" and request.current_approval_stage < 3 %}
-                        <a href="/approve/{{ loop.index0 }}/{{ request.current_approval_stage + 1 }}">Approuver</a>
-                        <a href="/approve/{{ loop.index0 }}/0">Refuser</a>
-                    {% endif %}
-                </td>
-            </tr>
-            {% endfor %}
-        </tbody>
+{% extends "base.html" %}
+
+{% block title %}Mes Demandes de Congé{% endblock %}
+
+{% block content %}
+<h1>Mes Demandes de Congé</h1>
+{% if leave_requests %}
+    <table>
+        <tr>
+            <th>Type de Congé</th>
+            <th>Date de Début</th>
+            <th>Date de Fin</th>
+            <th>Raison</th>
+            <th>Statut</th>
+        </tr>
+        {% for request in leave_requests %}
+        <tr>
+            <td>{{ request.leave_type }}</td>
+            <td>{{ request.start_date }}</td>
+            <td>{{ request.end_date }}</td>
+            <td>{{ request.reason }}</td>
+            <td>{{ request.status }}</td>
+        </tr>
+        {% endfor %}
     </table>
-</body>
-</html>
+{% else %}
+    <p>Aucune demande de congé soumise.</p>
+{% endif %}
+{% endblock %}
