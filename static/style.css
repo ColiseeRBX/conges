@@ -130,3 +130,10 @@ th {
 .status-link:hover, .logout-link:hover {
     background-color: #333;
 }
+/* Ajout des styles de base et adaptation de la taille de l'image */
+body {
+    font-family: 'Arial', sans-serif;
+    background-color: #f4f4f4;
+    margin: 0;
+    padding: 20px;
+}

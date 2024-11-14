@@ -38,18 +38,15 @@ def register():
     if request.method == 'POST':
         username = request.form['username']
         password = request.form['password']
-        role = request.form.get('role', type=int, default=0)  # Par défaut, les utilisateurs ont un rôle 0 (employé)
+        role = int(request.form.get('role', 0))
 
-        # Vérification si l'utilisateur existe déjà
         if username in users:
             return "Nom d'utilisateur déjà utilisé.", 400
 
-        # Enregistrement de l'utilisateur
         users[username] = password
         roles[username] = role
 
         return redirect(url_for('login'))
-
     return render_template('register.html')
 
 # Page d'accueil pour soumettre une demande de congé
@@ -96,9 +93,7 @@ def login():
         if username in users and users[username] == password:
             session['username'] = username
             return redirect(url_for('index'))
-
         return "Nom d'utilisateur ou mot de passe incorrect", 401
-
     return render_template('login.html')
 
 # Panneau d'approbation réservé aux responsables connectés
@@ -108,14 +103,11 @@ def approve_panel():
         return redirect(url_for('login'))
 
     username = session['username']
-    if username not in roles:
+    approver_role = roles.get(username)
+    if approver_role is None:
         return "Accès interdit", 403
 
-    approver_role = roles[username]
-
-    # Filtrer les demandes prêtes pour ce responsable
     requests_for_approver = [req for req in leave_requests if req.current_approval_stage == approver_role - 1]
-
     return render_template('approve_panel.html', leave_requests=requests_for_approver, approver_role=approver_role)
 
 # Approbation ou refus par les responsables
@@ -126,7 +118,6 @@ def approve_leave(request_id, approver):
 
     username = session['username']
     approver_role = roles.get(username)
-
     if approver_role is None:
         return "Accès interdit", 403
 
@@ -135,7 +126,7 @@ def approve_leave(request_id, approver):
         if approver == approver_role and approver == leave_request.current_approval_stage + 1:
             leave_request.current_approval_stage += 1
             leave_request.status = STATUS[leave_request.current_approval_stage]
-        elif approver == 0:  # Refus
+        elif approver == 0:
             leave_request.status = STATUS[4]
 
     return redirect(url_for('approve_panel'))
