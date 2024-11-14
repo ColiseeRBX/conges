@@ -1,13 +1,13 @@
 from flask import Flask, render_template, request, redirect, url_for, session
 
 app = Flask(__name__)
-app.secret_key = 'your_secret_key_here'  # Clé secrète pour les sessions
+app.secret_key = 'votre_cle_secrete'
 
-# Simuler une base de données des utilisateurs et leurs rôles
+# Simuler une base de données pour les utilisateurs, leurs mots de passe et rôles
 users = {
-    'anne.sophie': 'keirel123',          # Anne Sophie Keirel, Responsable 1
-    'bernard.vanalderwelt': 'vanalderwelt123',  # Bernard Vanalderwelt, Responsable 2
-    'bertrand.millet': 'millet123'       # Bertrand Millet, Responsable 3
+    'anne.sophie': 'keirel123',
+    'bernard.vanalderwelt': 'vanalderwelt123',
+    'bertrand.millet': 'millet123'
 }
 
 roles = {
@@ -32,15 +32,40 @@ class LeaveRequest:
         self.status = STATUS[0]
         self.current_approval_stage = 0
 
+# Route d'inscription pour les nouveaux utilisateurs
+@app.route('/register', methods=['GET', 'POST'])
+def register():
+    if request.method == 'POST':
+        username = request.form['username']
+        password = request.form['password']
+        role = request.form.get('role', type=int, default=0)  # Par défaut, les utilisateurs ont un rôle 0 (employé)
+
+        # Vérification si l'utilisateur existe déjà
+        if username in users:
+            return "Nom d'utilisateur déjà utilisé.", 400
+
+        # Enregistrement de l'utilisateur
+        users[username] = password
+        roles[username] = role
+
+        return redirect(url_for('login'))
+
+    return render_template('register.html')
+
 # Page d'accueil pour soumettre une demande de congé
 @app.route('/')
 def index():
+    if 'username' not in session:
+        return redirect(url_for('login'))
     return render_template('index.html')
 
 # Soumettre une demande de congé
 @app.route('/submit', methods=['POST'])
 def submit_leave_request():
-    employee_name = request.form['employee_name']
+    if 'username' not in session:
+        return redirect(url_for('login'))
+
+    employee_name = session['username']
     leave_type = request.form['leave_type']
     start_date = request.form['start_date']
     end_date = request.form['end_date']
@@ -51,12 +76,17 @@ def submit_leave_request():
 
     return redirect(url_for('leave_status'))
 
-# Afficher les demandes de congé pour les employés
+# Afficher les demandes de congé pour l'utilisateur connecté
 @app.route('/status')
 def leave_status():
-    return render_template('status.html', leave_requests=leave_requests)
+    if 'username' not in session:
+        return redirect(url_for('login'))
 
-# Page de connexion pour les approbateurs
+    employee_name = session['username']
+    user_leave_requests = [req for req in leave_requests if req.employee_name == employee_name]
+    return render_template('status.html', leave_requests=user_leave_requests)
+
+# Page de connexion pour les utilisateurs
 @app.route('/login', methods=['GET', 'POST'])
 def login():
     if request.method == 'POST':
@@ -65,7 +95,7 @@ def login():
 
         if username in users and users[username] == password:
             session['username'] = username
-            return redirect(url_for('approve_panel'))
+            return redirect(url_for('index'))
 
         return "Nom d'utilisateur ou mot de passe incorrect", 401
 
@@ -78,22 +108,27 @@ def approve_panel():
         return redirect(url_for('login'))
 
     username = session['username']
+    if username not in roles:
+        return "Accès interdit", 403
+
     approver_role = roles[username]
 
-    # Filtrer les demandes qui sont prêtes pour ce responsable
+    # Filtrer les demandes prêtes pour ce responsable
     requests_for_approver = [req for req in leave_requests if req.current_approval_stage == approver_role - 1]
 
     return render_template('approve_panel.html', leave_requests=requests_for_approver, approver_role=approver_role)
 
-
-# Approbation par les responsables
+# Approbation ou refus par les responsables
 @app.route('/approve/<int:request_id>/<int:approver>')
 def approve_leave(request_id, approver):
     if 'username' not in session:
         return redirect(url_for('login'))
 
     username = session['username']
-    approver_role = roles[username]
+    approver_role = roles.get(username)
+
+    if approver_role is None:
+        return "Accès interdit", 403
 
     if request_id < len(leave_requests):
         leave_request = leave_requests[request_id]
