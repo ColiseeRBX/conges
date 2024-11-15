@@ -1,29 +1,31 @@
 {% extends "base.html" %}
-
-{% block title %}Mes Demandes de Congé{% endblock %}
-
+{% block title %}Statut des demandes{% endblock %}
 {% block content %}
-<h2>Mes Demandes de Congé</h2>
+<h2>Statut de mes demandes de congé</h2>
 {% if leave_requests %}
-    <table>
+<table class="table table-striped">
+    <thead>
         <tr>
-            <th>Type de Congé</th>
-            <th>Date de Début</th>
-            <th>Date de Fin</th>
+            <th>Type de congé</th>
+            <th>Date de début</th>
+            <th>Date de fin</th>
             <th>Raison</th>
             <th>Statut</th>
         </tr>
-        {% for request in leave_requests %}
+    </thead>
+    <tbody>
+        {% for req in leave_requests %}
         <tr>
-            <td>{{ request.leave_type }}</td>
-            <td>{{ request.start_date }}</td>
-            <td>{{ request.end_date }}</td>
-            <td>{{ request.reason }}</td>
-            <td>{{ request.status }}</td>
+            <td>{{ req.leave_type }}</td>
+            <td>{{ req.start_date }}</td>
+            <td>{{ req.end_date }}</td>
+            <td>{{ req.reason }}</td>
+            <td>{{ req.status }}</td>
         </tr>
         {% endfor %}
-    </table>
+    </tbody>
+</table>
 {% else %}
-    <p>Aucune demande de congé soumise.</p>
+<p class="text-muted">Aucune demande de congé soumise pour le moment.</p>
 {% endif %}
 {% endblock %}

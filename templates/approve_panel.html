@@ -1,34 +1,36 @@
 {% extends "base.html" %}
-
-{% block title %}Panneau d'Approbation{% endblock %}
-
+{% block title %}Panneau d'approbation{% endblock %}
 {% block content %}
-<h1>Panneau d'Approbation - Niveau {{ approver_role }}</h1>
+<h2>Panneau d'approbation</h2>
 {% if leave_requests %}
-    <table>
+<table class="table table-bordered">
+    <thead>
         <tr>
-            <th>Nom de l'Employé</th>
-            <th>Type de Congé</th>
-            <th>Date de Début</th>
-            <th>Date de Fin</th>
+            <th>Employé</th>
+            <th>Type de congé</th>
+            <th>Date de début</th>
+            <th>Date de fin</th>
             <th>Raison</th>
             <th>Action</th>
         </tr>
-        {% for request in leave_requests %}
+    </thead>
+    <tbody>
+        {% for req in leave_requests %}
         <tr>
-            <td>{{ request.employee_name }}</td>
-            <td>{{ request.leave_type }}</td>
-            <td>{{ request.start_date }}</td>
-            <td>{{ request.end_date }}</td>
-            <td>{{ request.reason }}</td>
+            <td>{{ req.employee_name }}</td>
+            <td>{{ req.leave_type }}</td>
+            <td>{{ req.start_date }}</td>
+            <td>{{ req.end_date }}</td>
+            <td>{{ req.reason }}</td>
             <td>
-                <a href="{{ url_for('approve_leave', request_id=loop.index0, approver=approver_role) }}">Approuver</a> |
-                <a href="{{ url_for('approve_leave', request_id=loop.index0, approver=0) }}">Refuser</a>
+                <a href="{{ url_for('approve_leave', request_id=loop.index0, decision=1) }}" class="btn btn-success btn-sm">Approuver</a>
+                <a href="{{ url_for('approve_leave', request_id=loop.index0, decision=0) }}" class="btn btn-danger btn-sm">Refuser</a>
             </td>
         </tr>
         {% endfor %}
-    </table>
+    </tbody>
+</table>
 {% else %}
-    <p>Aucune demande de congé à approuver.</p>
+<p class="text-muted">Aucune demande en attente d'approbation.</p>
 {% endif %}
 {% endblock %}

@@ -1,0 +1,28 @@
+{% extends "base.html" %}
+{% block title %}Soumettre une demande{% endblock %}
+{% block content %}
+<h2>Soumettre une demande de congé</h2>
+<form method="post">
+    <div class="mb-3">
+        <label for="leave_type" class="form-label">Type de congé</label>
+        <select class="form-select" id="leave_type" name="leave_type" required>
+            <option value="Congé annuel">Congé annuel</option>
+            <option value="Congé maladie">Congé maladie</option>
+            <option value="Congé sans solde">Congé sans solde</option>
+        </select>
+    </div>
+    <div class="mb-3">
+        <label for="start_date" class="form-label">Date de début</label>
+        <input type="date" class="form-control" id="start_date" name="start_date" required>
+    </div>
+    <div class="mb-3">
+        <label for="end_date" class="form-label">Date de fin</label>
+        <input type="date" class="form-control" id="end_date" name="end_date" required>
+    </div>
+    <div class="mb-3">
+        <label for="reason" class="form-label">Raison</label>
+        <textarea class="form-control" id="reason" name="reason" rows="3" required></textarea>
+    </div>
+    <button type="submit" class="btn btn-primary">Soumettre</button>
+</form>
+{% endblock %}
