@@ -1,16 +1,54 @@
-{% extends "base.html" %}
-{% block title %}Connexion{% endblock %}
-{% block content %}
-<h2>Connexion</h2>
-<form method="post">
-    <div class="mb-3">
-        <label for="username" class="form-label">Nom d'utilisateur</label>
-        <input type="text" class="form-control" id="username" name="username" required>
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Page de connexion</title>
+    <style>
+        body {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            min-height: 100vh;
+            margin: 0;
+            font-family: Arial, sans-serif;
+            background-image: url("data:image/png;base64,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");
+            background-size: cover;
+            background-repeat: no-repeat;
+        }
+        .login-container {
+            background: rgba(255, 255, 255, 0.8);
+            padding: 20px;
+            border-radius: 8px;
+            text-align: center;
+            max-width: 400px;
+            width: 100%;
+        }
+        .footer {
+            position: fixed;
+            bottom: 10px;
+            width: 100%;
+            text-align: center;
+            font-size: 12px;
+            color: white;
+        }
+    </style>
+</head>
+<body>
+    <div class="login-container">
+        <h2>Connexion</h2>
+        <form method="post" action="{{ url_for('login') }}">
+            <div>
+                <input type="text" name="username" placeholder="Nom d'utilisateur" required>
+            </div>
+            <div>
+                <input type="password" name="password" placeholder="Mot de passe" required>
+            </div>
+            <div>
+                <button type="submit">Se connecter</button>
+            </div>
+        </form>
     </div>
-    <div class="mb-3">
-        <label for="password" class="form-label">Mot de passe</label>
-        <input type="password" class="form-control" id="password" name="password" required>
-    </div>
-    <button type="submit" class="btn btn-primary">Se connecter</button>
-</form>
-{% endblock %}
+    <div class="footer">Application développée par Badr</div>
+</body>
+</html>
