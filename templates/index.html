@@ -1,13 +1,11 @@
-{% extends "base.html" %}
-{% block title %}Accueil{% endblock %}
-{% block content %}
-<h2>Bienvenue, {{ session['username'] }}</h2>
-<p class="lead">Utilisez les options ci-dessous pour gérer vos congés :</p>
-<div class="d-flex justify-content-between">
-    <a href="{{ url_for('submit_leave_request') }}" class="btn btn-primary">Soumettre une demande</a>
-    <a href="{{ url_for('leave_status') }}" class="btn btn-secondary">Voir le statut de mes demandes</a>
-    {% if roles.get(session['username']) %}
-        <a href="{{ url_for('approve_panel') }}" class="btn btn-warning">Panneau d'approbation</a>
-    {% endif %}
-</div>
-{% endblock %}
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <title>Accueil</title>
+</head>
+<body>
+    <h1>Bienvenue dans la gestion des congés</h1>
+    <a href="{{ url_for('logout') }}">Déconnexion</a>
+</body>
+</html>
